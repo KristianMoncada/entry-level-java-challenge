@@ -6,6 +6,7 @@ import com.challenge.api.model.EmployeeImpl;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -69,6 +70,29 @@ public class EmployeeService {
 
         newEmployee.setUuid(uuid);
 
-        
+        if (!(requestBody instanceof Map)) {
+            throw new IllegalArgumentException("Invalid request body");
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> body = (Map<String, Object>) requestBody;
+
+        // Populate fields from request body
+        newEmployee.setFirstName((String) body.get("firstName"));
+        newEmployee.setLastName((String) body.get("lastName"));
+        newEmployee.setFullName(body.get("firstName") + " " + body.get("lastName"));
+        newEmployee.setEmail((String) body.get("email"));
+        newEmployee.setJobTitle((String) body.get("jobTitle"));
+        newEmployee.setAge((Integer) body.get("age"));
+        newEmployee.setSalary((Integer) body.get("salary"));
+
+        // System-managed fields
+        newEmployee.setContractHireDate(Instant.now());
+        newEmployee.setContractTerminationDate(null);
+
+        // Add to list
+        employees.add(newEmployee);
+
+        return newEmployee;
     }
 }
